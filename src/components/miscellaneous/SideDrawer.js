@@ -97,7 +97,7 @@ function SideDrawer() {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.post(`${process.env.REACT_APP_BASE_URL}api/chats`, { userId }, config);
+            const { data } = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/chats`, { userId }, config);
 
             if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
             console.log(data)
