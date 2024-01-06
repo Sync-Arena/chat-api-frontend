@@ -4,6 +4,8 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useState } from "react";
 import { useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom"
+
 import axios from "axios";
 
 
@@ -13,6 +15,7 @@ const Login = () => {
     const [password, setPassword] = useState();
     const [loading, setLoading] = useState(false);
     const toast = useToast();
+    const navigate = useNavigate()
 
     const handleClick = () => setShow((prvShow) => !prvShow);
 
@@ -38,26 +41,26 @@ const Login = () => {
             };
             
         try {
-					const { data } = await axios.post(
-						`${process.env.REACT_APP_BASE_URL}/api/user/login`,
-						{ email, password },
-						config
-					)
-					console.log("data", data)
-					toast({
-						title: "Login Successful",
-						status: "success",
-						duration: 5000,
-						isClosable: true,
-						position: "bottom",
-					})
-					// setUser(data);
-					localStorage.setItem("userInfo", JSON.stringify(data))
-					setLoading(false)
-					// history.push("/chats");
-				} catch (err) {
-                    console.log(err)
-                }
+            const { data } = await axios.post(
+                `http://localhost:3000/api/user/login`,
+                { email, password },
+                config
+            )
+            console.log("data", data)
+            toast({
+                title: "Login Successful",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            })
+            // setUser(data);
+            localStorage.setItem("userInfo", JSON.stringify(data))
+            setLoading(false)
+            navigate("/chats");
+        } catch (err) {
+            console.log(err)
+        }
         } catch (error) {
             toast({
                 title: "Error Occured!",

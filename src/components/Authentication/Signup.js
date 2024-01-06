@@ -5,7 +5,7 @@ import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
-// import { useHistory } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 
 const Signup = () => {
 
@@ -18,7 +18,7 @@ const Signup = () => {
     const [picLoading, setPicLoading] = useState(false);
 
     const toast = useToast();
-    // const history = useHistory();
+    const navigate = useNavigate();
 
     const handleClick = () => setShow(!show);
 
@@ -52,8 +52,9 @@ const Signup = () => {
                     "Content-type": "application/json",
                 },
             };
+            console.log(process.env.REACT_APP_BASE_URL)
             const { data } = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}/api/user`,
+                `http://localhost:3000/api/user`,
                 {
                     name,
                     email,
@@ -72,7 +73,7 @@ const Signup = () => {
             });
             localStorage.setItem("userInfo", JSON.stringify(data));
             setPicLoading(false);
-            // history.push("/chats");
+            navigate("/chats");
         } catch (error) {
             toast({
                 title: "Error Occured!",

@@ -2,7 +2,8 @@ import logo from "./logo.svg";
 import "./App.css";
 import {Route, Routes} from "react-router-dom"
 import Home from "./Pages/Home.js"
-import Chats from "./Pages/Chats.js"
+import ChatPage from "./Pages/ChatPage.js"
+import ChatProvider from "./Context/ChatProvider";
 import {BrowserRouter} from "react-router-dom"
 
 import {
@@ -16,10 +17,12 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" Component={Home} exact/>
-          <Route path="/chats" Component={Chats} />
-        </Routes>
+        <ChatProvider>
+          <Routes>
+            <Route path="/" Component={Home} exact/>
+            <Route path="/chats" Component={ChatPage} />
+          </Routes>
+        </ChatProvider>
       </BrowserRouter>    
     </div>
   );
