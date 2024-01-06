@@ -36,24 +36,28 @@ const Login = () => {
                     "Content-type": "application/json",
                 },
             };
-
-            const { data } = await axios.post(
-                "http://localhost:5000/api/user/login",
-                { email, password },
-                config
-            );
-
-            toast({
-                title: "Login Successful",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            });
-            // setUser(data);
-            localStorage.setItem("userInfo", JSON.stringify(data));
-            setLoading(false);
-            // history.push("/chats");
+            
+        try {
+					const { data } = await axios.post(
+						`${process.env.REACT_APP_BASE_URL}/api/user/login`,
+						{ email, password },
+						config
+					)
+					console.log("data", data)
+					toast({
+						title: "Login Successful",
+						status: "success",
+						duration: 5000,
+						isClosable: true,
+						position: "bottom",
+					})
+					// setUser(data);
+					localStorage.setItem("userInfo", JSON.stringify(data))
+					setLoading(false)
+					// history.push("/chats");
+				} catch (err) {
+                    console.log(err)
+                }
         } catch (error) {
             toast({
                 title: "Error Occured!",
