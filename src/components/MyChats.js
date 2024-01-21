@@ -5,10 +5,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { getSender } from "../config/ChatLogics";
 import ChatLoading from "./ChatLoading";
+import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
-function MyChats() {
+function MyChats({ fetchAgain }) {
   const [loggedUser, setLoggedUser] = useState();
 
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
@@ -16,6 +17,7 @@ function MyChats() {
   const toast = useToast();
 
   const fetchChats = async () => {
+    // console.log(user._id);
     try {
       const config = {
         headers: {
@@ -41,7 +43,7 @@ function MyChats() {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
     // eslint-disable-next-line
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <Box
@@ -65,6 +67,7 @@ function MyChats() {
         alignItems="center"
       >
         My Chats
+        <GroupChatModal>
           <Button
             display="flex"
             fontSize={{ base: "17px", md: "10px", lg: "17px" }}
@@ -72,6 +75,7 @@ function MyChats() {
           >
             New Group Chat
           </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display="flex"
@@ -121,5 +125,4 @@ function MyChats() {
 }
 
 export default MyChats
-
 
