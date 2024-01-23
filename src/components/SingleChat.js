@@ -92,7 +92,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 					`${process.env.REACT_APP_BASE_URL}/api/message`,
 					{
 						content: newMessage,
-						chatId: selectedChat,
+						chatId: selectedChat._id,
 					},
 					config
 				)

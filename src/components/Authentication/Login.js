@@ -60,6 +60,7 @@ const Login = () => {
             navigate("/chats");
         } catch (err) {
             console.log(err)
+            setLoading(false)
         }
         } catch (error) {
             toast({
