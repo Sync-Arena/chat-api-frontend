@@ -1,6 +1,7 @@
 
 
 export const isSameSenderMargin = (messages, m, i, userId) => {
+  // console.log(i === messages.length - 1);
 
   if (
     i < messages.length - 1 &&
