@@ -83,7 +83,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             );
 
             console.log(data._id);
-            // setSelectedChat("");
             setSelectedChat(data);
             setFetchAgain(!fetchAgain);
             setRenameLoading(false);
@@ -112,9 +111,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             });
             return;
         }
-        // console.log(selectedChat.groupAdmin[0]._id)
-        // console.log(user.id)
-        // console.log(selectedChat.groupAdmin[0]._id==user._id)
         if (!(selectedChat.groupAdmin.some(admin => admin._id == user.id))) {
             toast({
                 title: "Only admins can add someone!",
@@ -127,9 +123,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         }
 
         try {
-            let usersIdToBeAdded=[user1._id]
-            console.log(usersIdToBeAdded[0])
-            console.log(selectedChat._id)
+            let usersIdToBeAdded = [user1._id]
             setLoading(true);
             const config = {
                 headers: {
@@ -140,7 +134,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 `${process.env.REACT_APP_BASE_URL}/api/chats/group/add`,
                 {
                     groupId: selectedChat._id,
-                    usersIds: usersIdToBeAdded
+                    usersIds: JSON.stringify(usersIdToBeAdded)
                 },
                 config
             );
@@ -163,7 +157,55 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     };
 
     const handleRemove = async (user1) => {
+        console.log(user1._id);
+        console.log(user.id);
+        console.log(selectedChat.groupAdmin.some(ad => ad.id == user.id))
+        console.log(selectedChat.groupAdmin)
+        if (!selectedChat.groupAdmin.some(ad => ad._id == user.id) && user1._id !== user.id) {
+            toast({
+                title: "Only admins can remove someone!",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            return;
+        }
 
+        try {
+            let usersIdToBeRemoved = [user1._id]
+            setLoading(true);
+            const config = {
+                headers: {
+                    "Content-type": "application/json",
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            const { data } = await axios.delete(
+                `${process.env.REACT_APP_BASE_URL}/api/chats/group`,
+                {
+                    groupId: selectedChat._id,
+                    usersIds: JSON.stringify(usersIdToBeRemoved),
+                },
+                config
+            );
+
+            user1._id === user.id ? setSelectedChat() : setSelectedChat(data);
+            setFetchAgain(!fetchAgain);
+            fetchMessages();
+            setLoading(false);
+        } catch (error) {
+            toast({
+                title: "Error Occured!",
+                description: error.response.data.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            setLoading(false);
+        }
+        setGroupChatName("");
     };
 
     return (
@@ -215,6 +257,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                             <Input
                                 placeholder="Add User to group"
                                 mb={1}
+                                value={search}
                                 onChange={(e) => handleSearch(e.target.value)}
                             />
                         </FormControl>
@@ -224,7 +267,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                         ) : (
                             searchResult?.map((user) => (
                                 <UserListItem
-                                    key={user._id}
+                                    key={user.id}
                                     user={user}
                                     handleFunction={() => handleAddUser(user)}
                                 />

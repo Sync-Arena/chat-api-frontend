@@ -17,7 +17,7 @@ const UserBadgeItem = ({ user, handleFunction, admin }) => {
             onClick={handleFunction}
         >
             {user.name}
-            {admin.some(ad => ad._id == user._id) && <span> (Admin)</span>}
+            {/* {admin.some(ad => ad._id == user._id) && <span> (Admin)</span>} */}
             <CloseIcon pl={1} />
         </Badge>
     );
