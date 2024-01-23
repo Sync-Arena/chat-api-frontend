@@ -110,7 +110,6 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 			}
 		}
 	}
-    console.log(notification)
 	useEffect(() => {
 		fetchMessages()
 		selectedChatCompare = selectedChat
@@ -197,7 +196,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 						p={3}
 						bg="#E8E8E8"
 						w="100%"
-						h="100%"
+						h="92.5%"
 						borderRadius="lg"
 						overflowY="hidden">
 						{loading ? (
