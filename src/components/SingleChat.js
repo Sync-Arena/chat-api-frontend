@@ -32,7 +32,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	const toast = useToast()
 	const [socketConnected, setSocketConnected] = useState(false)
 	const [typing, setTyping] = useState(false)
-	const [isTyping, setIsTyping] = useState(false)
+	const [isTyping, setIsTyping] = useState(undefined)
 
 	const { selectedChat, setSelectedChat, user, notification, setNotification } =
 		ChatState()
@@ -42,16 +42,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 		socket.on("connected", () => setSocketConnected(true))
 		if (selectedChat) {
 			socket.emit("joinChat", selectedChat._id)
-			socket.on("chatJoined", (currentOpenedChat) => {
-				socket.on("typing", (room) => {
-					if (room === currentOpenedChat) setIsTyping(true)
-					else setIsTyping(false)
-				})
-				socket.on("stopTyping", (room) => {
-					if (room === currentOpenedChat) setIsTyping(false)
-					else setIsTyping(false)
-				})
-			})
+			socket.on("ftyping", () => setIsTyping(true))
+			socket.on("fstopTyping", () => setIsTyping(false))
 		}
 	}, [selectedChat, user])
 
@@ -125,7 +117,6 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 	useEffect(() => {
 		socket.on("messageReceived", (messageReceived) => {
-			console.log(messageReceived)
 			if (
 				!selectedChatCompare ||
 				selectedChatCompare._id !== messageReceived.chat._id
@@ -153,11 +144,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 		if (!typing) {
 			setTyping(true)
-			// socket.emit("typing", selectedChat._id)
+			socket.emit("typing", selectedChat._id)
 		}
 
 		setTimeout(() => {
-			// socket.emit("stopTyping", selectedChat._id)
+			socket.emit("stopTyping", selectedChat._id)
 			setTyping(false)
 		}, 1000)
 	}
