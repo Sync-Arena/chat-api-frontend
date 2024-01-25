@@ -63,6 +63,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 				`${process.env.REACT_APP_BASE_URL}/api/message/${selectedChat._id}`,
 				config
 			)
+			setNotification(
+				notification.filter(
+					(currentNote) => currentNote.chat._id !== selectedChat._id
+				)
+			)
 			setMessages(data)
 			setLoading(false)
 			socket.emit("joinChat", selectedChat._id)
@@ -117,21 +122,22 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 	useEffect(() => {
 		socket.on("messageReceived", (messageReceived) => {
+			// console.log(messageReceived)
 			if (
 				!selectedChatCompare ||
 				selectedChatCompare._id !== messageReceived.chat._id
 			) {
 				// give notification
-				// console.log("my notification", notification)
-				// if (
-				// 	!notification.some((message) => {
-				// 		console.log(message.chat._id, messageReceived.chat._id)
-				// 		return message.chat._id === messageReceived.chat._id
-				// 	})
-				// ) {
-				// 	setNotification([messageReceived, ...notification])
-				// 	setFetchAgain(!fetchAgain)
-				// }
+				console.log("my notification", notification)
+				let notify = notification.filter((currentNote) => {
+					return currentNote.chat._id !== messageReceived.chat._id
+				})
+				console.log("not", notify)
+
+				if (messageReceived.sender._id !== user._id) {
+					setNotification([messageReceived, ...notify])
+					setFetchAgain(!fetchAgain)
+				}
 			} else {
 				setMessages([...messages, messageReceived])
 			}
@@ -144,11 +150,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 		if (!typing) {
 			setTyping(true)
-			socket.emit("typing", selectedChat._id)
+			// socket.emit("typing", selectedChat._id)
 		}
 
 		setTimeout(() => {
-			socket.emit("stopTyping", selectedChat._id)
+			// socket.emit("stopTyping", selectedChat._id)
 			setTyping(false)
 		}, 1000)
 	}
