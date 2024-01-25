@@ -36,16 +36,24 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 	const { selectedChat, setSelectedChat, user, notification, setNotification } =
 		ChatState()
-
 	useEffect(() => {
 		socket = io(process.env.REACT_APP_BASE_URL)
 		socket.emit("setup", user)
-		socket.on("connected", () => {
-			setSocketConnected(true)
-		})
-		socket.on("typing", () => setIsTyping(true))
-		socket.on("stopTyping", () => setIsTyping(false))
-	}, [])
+		socket.on("connected", () => setSocketConnected(true))
+		if (selectedChat) {
+			socket.emit("joinChat", selectedChat._id)
+			socket.on("chatJoined", (currentOpenedChat) => {
+				socket.on("typing", (room) => {
+					if (room === currentOpenedChat) setIsTyping(true)
+					else setIsTyping(false)
+				})
+				socket.on("stopTyping", (room) => {
+					if (room === currentOpenedChat) setIsTyping(false)
+					else setIsTyping(false)
+				})
+			})
+		}
+	}, [selectedChat, user])
 
 	const fetchMessages = async () => {
 		if (!selectedChat) return
@@ -79,7 +87,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	}
 	const sendMessage = async (event) => {
 		if (event.key === "Enter" && newMessage) {
-			socket.emit("stopTyping", selectedChat._id)
+			// socket.emit("stopTyping", selectedChat._id)
 			try {
 				const config = {
 					headers: {
@@ -117,17 +125,22 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 	useEffect(() => {
 		socket.on("messageReceived", (messageReceived) => {
-			console.log(109, messageReceived)
-
+			console.log(messageReceived)
 			if (
 				!selectedChatCompare ||
 				selectedChatCompare._id !== messageReceived.chat._id
 			) {
 				// give notification
-                if(!notification.includes(messageReceived)){
-                    setNotification([messageReceived, ...notification])
-                    setFetchAgain(!fetchAgain)
-                }
+				// console.log("my notification", notification)
+				// if (
+				// 	!notification.some((message) => {
+				// 		console.log(message.chat._id, messageReceived.chat._id)
+				// 		return message.chat._id === messageReceived.chat._id
+				// 	})
+				// ) {
+				// 	setNotification([messageReceived, ...notification])
+				// 	setFetchAgain(!fetchAgain)
+				// }
 			} else {
 				setMessages([...messages, messageReceived])
 			}
@@ -140,20 +153,13 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 		if (!typing) {
 			setTyping(true)
-			socket.emit("typing", selectedChat._id)
+			// socket.emit("typing", selectedChat._id)
 		}
 
-		let lastTypingTime = new Date().getTime()
-		let timerLength = 3000
-
 		setTimeout(() => {
-			let timeNow = new Date().getTime()
-			let timeDiff = timeNow - lastTypingTime
-			if (timeDiff >= timerLength && typing) {
-				socket.emit("stopTyping", selectedChat._id)
-				setTyping(false)
-			}
-		}, timerLength)
+			// socket.emit("stopTyping", selectedChat._id)
+			setTyping(false)
+		}, 1000)
 	}
 	return (
 		<>
@@ -173,7 +179,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 							icon={<ArrowBackIcon />}
 							onClick={() => setSelectedChat("")}
 						/>
-						{!selectedChat.isGroupChat ? (
+						{messages && !selectedChat.isGroupChat ? (
 							<>
 								{getSender(user, selectedChat.users)}
 								<ProfileModal user={getSenderFull(user, selectedChat.users)} />
