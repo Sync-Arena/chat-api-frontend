@@ -103,6 +103,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 				)
 				socket.emit("newMessage", data)
 				setMessages((messages) => [...messages, data])
+				console.log(messages)
 			} catch (error) {
 				toast({
 					title: "Error Occured!",
@@ -118,11 +119,16 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	useEffect(() => {
 		fetchMessages()
 		selectedChatCompare = selectedChat
+		console.log(selectedChat)
 	}, [selectedChat])
 
 	useEffect(() => {
 		socket.on("messageReceived", (messageReceived) => {
-			// console.log(messageReceived)
+			// console.log(selectedChatCompare)
+			// console.log(selectedChat && selectedChat._id)
+			// console.log(selectedChat.id)
+			// console.log(selectedChatCompare && selectedChatCompare._id)
+			// console.log(selectedChatCompare.id)
 			if (
 				!selectedChatCompare ||
 				selectedChatCompare._id !== messageReceived.chat._id
@@ -141,6 +147,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 			} else {
 				setMessages([...messages, messageReceived])
 			}
+			setFetchAgain(!fetchAgain)
 		})
 	})
 

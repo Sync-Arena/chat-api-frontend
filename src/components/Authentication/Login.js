@@ -39,29 +39,37 @@ const Login = () => {
                     "Content-type": "application/json",
                 },
             };
-            
-        try {
-            const { data } = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}/api/user/login`,
-                { email, password },
-                config
-            )
-            console.log("data", data)
-            toast({
-                title: "Login Successful",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            })
-            // setUser(data);
-            localStorage.setItem("userInfo", JSON.stringify(data))
-            setLoading(false)
-            navigate("/chats");
-        } catch (err) {
-            console.log(err)
-            setLoading(false)
-        }
+
+            try {
+                const { data } = await axios.post(
+                    `${process.env.REACT_APP_BASE_URL}/api/user/login`,
+                    { email, password },
+                    config
+                )
+                console.log("data", data)
+                toast({
+                    title: "Login Successful",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                    position: "bottom",
+                })
+                // setUser(data);
+                localStorage.setItem("userInfo", JSON.stringify(data))
+                setLoading(false)
+                navigate("/chats");
+            } catch (err) {
+                console.log(err)
+                toast({
+                    title: err.response.data.message,
+                    description: "Sorry, the email or password provided is incorrect. Please try again.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                    position: "bottom",
+                });
+                setLoading(false)
+            }
         } catch (error) {
             toast({
                 title: "Error Occured!",
